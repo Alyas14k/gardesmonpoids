@@ -3,11 +3,17 @@
 GardeMonPoids est une application mobile développée en Flutter pour aider les utilisateurs à suivre et analyser leur poids corporel au quotidien. L'application permet de renseigner, visualiser et analyser les variations de poids, de calculer l'IMC (Indice de Masse Corporelle), et d'afficher des graphiques de suivi.
 
 Fonctionnalités
+  
   Journalisation du poids : Les utilisateurs peuvent enregistrer leur poids quotidiennement avec la date associée.
+  
   Analyse du poids : Affichage du poids actuel et des précédents, avec un historique en fonction des dates.
+  
   Calcul de l'IMC : Calcul automatique de l'IMC en fonction du poids et de la taille, avec une évaluation de la catégorie (poids insuffisant, normal,   surpoids, etc.).
+ 
   Graphiques de suivi : Visualisation des tendances de poids sous forme de courbes.
+  
   Sécurité des données : Authentification sécurisée pour protéger les données personnelles.
+  
   Navigation intuitive : Menu de navigation pour accéder facilement aux différentes pages de l'application.
 
 Installation
