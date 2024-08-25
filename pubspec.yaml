@@ -11,16 +11,25 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  sqflite: ^2.0.0+4
+  sqflite: ^2.0.0+4  #dependance pour la base de données
   path: ^1.8.0
   cupertino_icons: ^1.0.6
   intl: ^0.17.0 # Ajout de la dépendance intl
-  fl_chart: ^0.68.0
+  fl_chart: ^0.68.0  # dependance pour la gestion de graphique
+
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.0
+  flutter_launcher_icons: ^0.13.1
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/icons/poids.png"
+  adaptive_icon_background: "#ffffff"  # Facultatif, pour les icônes adaptatives Android
+  adaptive_icon_foreground: "assets/icons/poids.png"  # Facultatif, pour les
 
 flutter:
   uses-material-design: true

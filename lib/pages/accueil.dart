@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AccueilPage extends StatelessWidget {
+  // Initialisation des variables
   final String nom;
   final String prenom;
   final String username;
@@ -31,6 +32,9 @@ class AccueilPage extends StatelessWidget {
                   'username': username,
                 });
                 break;
+              case 'CalculIMC':
+                Navigator.pushReplacementNamed(context, '/calculimc');
+                break;
               case 'Profil':
                 Navigator.pushReplacementNamed(context, '/profile', arguments: {
                   'nom': nom,
@@ -59,6 +63,16 @@ class AccueilPage extends StatelessWidget {
                     Icon(Icons.show_chart, color: Colors.black),
                     SizedBox(width: 10),
                     Text('Suivi Corporel', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black)),
+                  ],
+                ),
+              ),
+              PopupMenuItem<String>(
+                value: 'CalculIMC',
+                child: Row(
+                  children: [
+                    Icon(Icons.monitor_weight, color: Colors.black),
+                    SizedBox(width: 10),
+                    Text('CalculIMC', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black)),
                   ],
                 ),
               ),
@@ -108,11 +122,11 @@ class AccueilPage extends StatelessWidget {
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(18.0),
         child: Column(
           children: [
             Text(
-              'Bienvenue $nom $prenom',
+              'Bienvenue $prenom $nom ',
               style: TextStyle(
                 fontSize: 40,
                 fontWeight: FontWeight.bold,
@@ -120,7 +134,7 @@ class AccueilPage extends StatelessWidget {
               ),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 30),
+            SizedBox(height: 40),
             Center(
               child: Column(
                 children: [
@@ -153,7 +167,7 @@ class AccueilPage extends StatelessWidget {
                       ),
                     ),
                   ),
-                  SizedBox(height: 20),
+                  SizedBox(height: 30),
                   GestureDetector(
                     onTap: () {
                       Navigator.pushReplacementNamed(context, '/suivi', arguments: {

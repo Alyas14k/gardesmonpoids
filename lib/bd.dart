@@ -25,7 +25,6 @@ class BD {
 
   Future _createDB(Database db, int version) async {
     try {
-      // Création de la table users
       await db.execute('''
         CREATE TABLE users (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -38,7 +37,6 @@ class BD {
       ''');
       print('Table users créée');
 
-      // Création de la table poids
       await db.execute('''
         CREATE TABLE poids (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -47,8 +45,43 @@ class BD {
         )
       ''');
       print('Table poids créée');
+
+      await db.execute('''
+        CREATE TABLE imc (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          valeur_taille INTEGER,
+          valeur_poids REAL,
+          age INTEGER,
+          valeur_imc REAL
+        )
+      ''');
+      print('Table IMC créée');
+
     } catch (e) {
       print('Erreur lors de la création des tables: $e');
+    }
+  }
+
+  // Fonction pour calculer l'IMC et insérer le résultat dans la table IMC
+  Future<double> calculerEtEnregistrerIMC(int taille, double poids, int age) async {
+    try {
+      // Calcul de l'IMC
+      double tailleEnMetres = taille / 100;
+      double imc = poids / (tailleEnMetres * tailleEnMetres);
+
+      // Insertion du résultat dans la table IMC
+      final db = await instance.database;
+      await db.insert('imc', {
+        'valeur_taille': taille,
+        'valeur_poids': poids,
+        'age': age,
+        'valeur_imc': imc,
+      });
+
+      return imc;
+    } catch (e) {
+      print('Erreur lors du calcul de l\'IMC: $e');
+      return 0.0; // Retourne 0.0 en cas d'erreur
     }
   }
 
@@ -119,3 +152,4 @@ class BD {
     }
   }
 }
+

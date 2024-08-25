@@ -9,7 +9,7 @@ class GraphiquePage extends StatefulWidget {
 }
 
 class _GraphiquePageState extends State<GraphiquePage> {
-  List<FlSpot> _spots = [];
+  List<BarChartGroupData> _barGroups = [];
   List<String> _dates = [];
 
   @override
@@ -21,13 +21,38 @@ class _GraphiquePageState extends State<GraphiquePage> {
   void _loadData() async {
     final historique = await BD.instance.obtenirHistoriquePoids();
     setState(() {
-      _spots = historique
+      // Préparer les données pour l'histogramme
+      _barGroups = historique
           .asMap()
           .entries
-          .map((e) => FlSpot(
-        e.key.toDouble(),
-        e.value['valeur_poids'],
-      ))
+          .map((e) {
+        double poids = e.value['valeur_poids'].toDouble();
+        Color color;
+
+        // Définir la couleur en fonction du poids
+        if (poids >= 5 && poids <= 40) {
+          color = Colors.yellow; // 5kg à 40kg : Jaune
+        } else if (poids >= 41 && poids <= 70) {
+          color = Colors.green; // 41kg à 70kg : Vert
+        } else if (poids >= 71 && poids <= 90) {
+          color = Colors.orange; // 71kg à 90kg : Orange
+        } else if (poids >= 91) {
+          color = Colors.red; // 91kg et plus : Rouge
+        } else {
+          color = Colors.blue; // Cas par défaut
+        }
+
+        return BarChartGroupData(
+          x: e.key,
+          barRods: [
+            BarChartRodData(
+              toY: poids,
+              color: color,
+              width: 15, // Largeur des barres
+            ),
+          ],
+        );
+      })
           .toList();
 
       // Corriger le format de la date si nécessaire
@@ -57,19 +82,11 @@ class _GraphiquePageState extends State<GraphiquePage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: _spots.isEmpty
+        child: _barGroups.isEmpty
             ? Center(child: CircularProgressIndicator())
-            : LineChart(
-          LineChartData(
-            lineBarsData: [
-              LineChartBarData(
-                spots: _spots,
-                isCurved: true,
-                color: Colors.blue,
-                barWidth: 4,
-                belowBarData: BarAreaData(show: false),
-              ),
-            ],
+            : BarChart(
+          BarChartData(
+            barGroups: _barGroups,
             titlesData: FlTitlesData(
               leftTitles: AxisTitles(
                 sideTitles: SideTitles(showTitles: true),

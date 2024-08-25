@@ -159,9 +159,9 @@ class _InscriptionPageState extends State<InscriptionPage> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12.0),
                     ),
-                    backgroundColor: Colors.blue,
+                    backgroundColor: Colors.green,
                   ),
-                  child: Text('Inscription', style: TextStyle(fontSize: 18)),
+                  child: Text('Inscription', style: TextStyle(fontSize: 20, color: Colors.black)),
                 ),
               ],
             ),

@@ -2,6 +2,12 @@ import 'package:flutter/material.dart';
 import '../bd.dart';
 
 class SuiviPage extends StatefulWidget {
+  final String nom;
+  final String prenom;
+  final String username;
+
+  SuiviPage({required this.nom, required this.prenom, required this.username});
+
   @override
   _SuiviPageState createState() => _SuiviPageState();
 }
@@ -44,7 +50,7 @@ class _SuiviPageState extends State<SuiviPage> {
       final data = await BD.instance.obtenirHistoriquePoids();  // Obtenir tout l'historique
       if (data.isNotEmpty) {
         setState(() {
-          _poidsActuel = data.first['valeur_poids'];  // Le premier élément est le plus récent
+          _poidsActuel = data.first['valeur_poids'];  // La dernière valeur est la plus récente
         });
       }
     } catch (e) {
@@ -82,62 +88,159 @@ class _SuiviPageState extends State<SuiviPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Suivi Corporel'),
-        backgroundColor: Colors.blue[900],
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context); // Redirige vers la page d'accueil
+        backgroundColor: Colors.green,
+        leading: PopupMenuButton<String>(
+          icon: Icon(Icons.menu),
+          onSelected: (String value) {
+            switch (value) {
+              case 'Accueil':
+                Navigator.pushReplacementNamed(context, '/accueil', arguments: {
+                  'nom': widget.nom,
+                  'prenom': widget.prenom,
+                  'username': widget.username,
+                });
+                break;
+              case 'Suivi Corporel':
+                Navigator.pushReplacementNamed(context, '/suivi', arguments: {
+                  'nom': widget.nom,
+                  'prenom': widget.prenom,
+                  'username': widget.username,
+                });
+                break;
+              case 'Profil':
+                Navigator.pushReplacementNamed(context, '/profile', arguments: {
+                  'nom': widget.nom,
+                  'prenom': widget.prenom,
+                  'username': widget.username,
+                });
+                break;
+            }
+          },
+          itemBuilder: (BuildContext context) {
+            return [
+              PopupMenuItem<String>(
+                value: 'Accueil',
+                child: Row(
+                  children: [
+                    Icon(Icons.home, color: Colors.black),
+                    SizedBox(width: 10),
+                    Text('Accueil', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black)),
+                  ],
+                ),
+              ),
+              PopupMenuItem<String>(
+                value: 'Suivi Corporel',
+                child: Row(
+                  children: [
+                    Icon(Icons.show_chart, color: Colors.black),
+                    SizedBox(width: 10),
+                    Text('Suivi Corporel', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black)),
+                  ],
+                ),
+              ),
+              PopupMenuItem<String>(
+                value: 'Profil',
+                child: Row(
+                  children: [
+                    Icon(Icons.person, color: Colors.black),
+                    SizedBox(width: 10),
+                    Text('Profil', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black)),
+                  ],
+                ),
+              ),
+            ];
           },
         ),
+        title: Text('Suivi corporel', textAlign: TextAlign.center),
+        centerTitle: true,
+        actions: [
+          CircleAvatar(
+            backgroundColor: Colors.blue,
+            child: Text(
+              widget.username[0].toUpperCase(),
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+          SizedBox(width: 10),
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              if (value == 'logout') {
+                Navigator.pushReplacementNamed(context, '/connexion');
+              }
+            },
+            itemBuilder: (BuildContext context) {
+              return [
+                PopupMenuItem<String>(
+                  value: 'logout',
+                  child: Text('Se déconnecter', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black)),
+                ),
+              ];
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Center(child: Text(widget.username)),
+            ),
+          ),
+        ],
       ),
       body: Container(
-        color: Colors.blue,
+        color: Colors.blue[900],
         padding: EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (_poidsActuel != null)
-              Text(
-                'Votre poids actuel est: $_poidsActuel kg',
-                style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
-              ),
+            Text(
+              'Votre poids actuel est ${_poidsActuel ?? 'N/A'} kg',
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
+            ),
+            SizedBox(height: 30),
+            Text('Sélectionnez la période pour obtenir un historique :', style: TextStyle(color: Colors.white, fontSize: 20)),
             SizedBox(height: 20),
-            TextField(
-              controller: _dateDebutController,
-              decoration: InputDecoration(
-                labelText: 'Date de début (jour-mois-année)',
-                labelStyle: TextStyle(color: Colors.white),
-                fillColor: Colors.white,
-                filled: true,
-              ),
-              style: TextStyle(color: Colors.black),
-              keyboardType: TextInputType.datetime,
-              onTap: () {
-                _selectDate(context, _dateDebutController);
-              },
-            ),
-            TextField(
-              controller: _dateFinController,
-              decoration: InputDecoration(
-                labelText: 'Date de fin (jour-mois-année)',
-                labelStyle: TextStyle(color: Colors.white),
-                fillColor: Colors.white,
-                filled: true,
-              ),
-              style: TextStyle(color: Colors.black),
-              keyboardType: TextInputType.datetime,
-              onTap: () {
-                _selectDate(context, _dateFinController);
-              },
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    controller: _dateDebutController,
+                    style: TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                      labelText: 'Date début',
+                      labelStyle: TextStyle(color: Colors.white, fontSize: 20),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white),
+                      ),
+                    ),
+                    onTap: () => _selectDate(context, _dateDebutController),
+                  ),
+                ),
+                SizedBox(width: 20),
+                Expanded(
+                  child: TextFormField(
+                    controller: _dateFinController,
+                    style: TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                      labelText: 'Date fin',
+                      labelStyle: TextStyle(color: Colors.white, fontSize: 20),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white),
+                      ),
+                    ),
+                    onTap: () => _selectDate(context, _dateFinController),
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(Icons.search, color: Colors.white),
+                  onPressed: _fetchData,
+                ),
+              ],
             ),
             SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _fetchData,
-              child: Text('Afficher l\'historique'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green,
-              ),
-            ),
             Expanded(
               child: ListView.builder(
                 itemCount: _historique.length,
@@ -146,11 +249,11 @@ class _SuiviPageState extends State<SuiviPage> {
                   return ListTile(
                     title: Text(
                       'Poids: ${item['valeur_poids']} kg',
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(color: Colors.white, fontSize: 20),
                     ),
                     subtitle: Text(
                       'Date: ${item['date_prise']}',
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(color: Colors.white, fontSize: 20),
                     ),
                   );
                 },
@@ -160,31 +263,30 @@ class _SuiviPageState extends State<SuiviPage> {
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Accueil',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.track_changes),
-            label: 'Suivi Corporel',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profil',
-          ),
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Accueil'),
+          BottomNavigationBarItem(icon: Icon(Icons.show_chart), label: 'Graphique'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
         ],
-        selectedItemColor: Colors.amber[800],
+        currentIndex: 1, // Suivi Corporel is selected
         onTap: (index) {
           switch (index) {
             case 0:
-              Navigator.pushReplacementNamed(context, '/accueil');
+              Navigator.pushReplacementNamed(context, '/accueil', arguments: {
+                'nom': widget.nom,
+                'prenom': widget.prenom,
+                'username': widget.username,
+              });
               break;
             case 1:
-              Navigator.pushReplacementNamed(context, '/suivi');
+              Navigator.pushReplacementNamed(context, '/graphique');
               break;
             case 2:
-              Navigator.pushReplacementNamed(context, '/profile');
+              Navigator.pushReplacementNamed(context, '/profile', arguments: {
+                'nom': widget.nom,
+                'prenom': widget.prenom,
+                'username': widget.username,
+              });
               break;
           }
         },
